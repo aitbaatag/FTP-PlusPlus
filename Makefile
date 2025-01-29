@@ -1,48 +1,46 @@
-# Compiler
-CC = g++
-
-# Compiler flags
-CFLAGS = -Wall -Wextra -std=c++98 -Iinclude
+# Program name
+NAME = simple-ftp
 
 # Directories
-SRCDIR = src
-SERVER_OBJDIR = server
-CLIENT_OBJDIR = client
+SRC_DIR = src
+OBJ_DIR = obj
+INC_DIR = inc
 
-# Source files
-SERVER_SRCS = $(SRCDIR)/main_server.cpp $(SRCDIR)/Server/Server.cpp $(SRCDIR)/Socket/Socket.cpp
-CLIENT_SRCS = $(SRCDIR)/main_client.cpp $(SRCDIR)/Client/Client.cpp $(SRCDIR)/Socket/Socket.cpp
+# Compiler and flags
+CC = g++
+CFLAGS = -Wall -Wextra -std=c++98 -g3
+
+CLIENT_SRCS = $(addprefix $(SRC_DIR)/Client/, client.cpp)
+SERVER_SRCS = $(addprefix $(SRC_DIR)/Server/, Server.cpp)
+SOCKET_SRCS = $(addprefix $(SRC_DIR)/Socket/, socket.cpp)
+MAIN_SRCS = $(addprefix $(SRC_DIR)/, main_client.cpp main_server.cpp)
 
 # Object files
-SERVER_OBJS = $(SERVER_SRCS:.cpp=.o)
-CLIENT_OBJS = $(CLIENT_SRCS:.cpp=.o)
+CLIENT_OBJS = $(CLIENT_SRCS:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
+SERVER_OBJS = $(SERVER_SRCS:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
+SOCKET_OBJS = $(SOCKET_SRCS:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
+MAIN_OBJS = $(MAIN_SRCS:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
 
-# Output binaries
-SERVER_TARGET = ftp_server
-CLIENT_TARGET = ftp_client
+# All objects
+OBJS = $(CLIENT_OBJS) $(SERVER_OBJS) $(SOCKET_OBJS) $(MAIN_OBJS)
 
-# Default target: build both programs
-all: $(SERVER_TARGET) $(CLIENT_TARGET)
+# Targets
+all: $(NAME)
 
-# Rule to build server objects
-$(SERVER_OBJS)/%.o: $(SERVER_SRCS)/%.cpp
-	$(CC) $(CFLAGS) -c $< -o $@
+# Compilation rule
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -I$(INC_DIR) -c $< -o $@
 
-# Rule to build client objects
-$(CLIENT_OBJS)/%.o: $(CLIENT_SRCS)/%.cpp
-	$(CC) $(CFLAGS) -c $< -o $@
+$(NAME): $(OBJS)
+	$(CC) $(CFLAGS) $(CLIENT_OBJS) $(SOCKET_OBJS) $(OBJ_DIR)/main_client.o -o client
+	$(CC) $(CFLAGS) $(SERVER_OBJS) $(SOCKET_OBJS) $(OBJ_DIR)/main_server.o -o server
 
-# Server binary
-$(SERVER_TARGET): $(SERVER_OBJS)
-	$(CC) $(CFLAGS) $^ -o $@
-
-# Client binary
-$(CLIENT_TARGET): $(CLIENT_OBJS)
-	$(CC) $(CFLAGS) $^ -o $@
-
-# Clean up build files
+# Cleaning
 clean:
-	rm -rf $(OBJDIR) $(SERVER_TARGET) $(CLIENT_TARGET)
+	rm -rf $(OBJ_DIR)
 
-# Rebuild everything
-re: clean all
+fclean: clean
+	rm -f client server
+
+re: fclean all
