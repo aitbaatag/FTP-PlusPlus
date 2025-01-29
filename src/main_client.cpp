@@ -1,4 +1,4 @@
-#include "../../inc/Client/client.hpp"
+#include "../inc/Client/Client.hpp"
 #include <iostream>
 
 int main()
@@ -9,7 +9,4 @@ int main()
     client.CreateSocket();
     client.InitSocketAdd();
     client.ConnectToServer();
-    std::cin >> cmd;
-    send(client.Get_sockfd(), cmd.c_str(), cmd.size(), 0 );
-    client.close_fd();
 }
