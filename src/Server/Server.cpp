@@ -1,4 +1,4 @@
-#include "../../inc/Server/Server.hpp"
+#include "../../inc/Server/Server.hpj6rty t r"
 
 Server::Server(int port) :  Socket(port) 
 {
@@ -31,7 +31,7 @@ void Server::StartServer()
             buffer[bytes_read] = '\0'; // Null-terminate the string
             std::cout << "Received from client: " << buffer << std::endl;
 
-            // Respond to the client
+            // Respond to the clien
             std::string response = "I get : " + std::string(buffer);
             write(client_fd, response.c_str(), response.size());
         } else if (bytes_read == 0) {
@@ -45,5 +45,5 @@ void Server::StartServer()
 
     // Close client socket after communication ends
     close(client_fd);
-}
+    }
 }

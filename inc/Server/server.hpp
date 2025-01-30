@@ -1,6 +1,6 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
-#include "../Socket/Socket.hpp"
+#include "../Socket/"
 #include <iostream>
 #include <string>
 #include <cstring>
