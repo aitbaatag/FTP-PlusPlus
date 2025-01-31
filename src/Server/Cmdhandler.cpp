@@ -7,20 +7,30 @@ Cmdhandler::Cmdhandler(int client_fd) : buffer({0})
 void Cmdhandler::GetCmd()
 {
   int valread;
+  std::string input;
 
-  valread = recv(client_fd, buffer, SIZE_BUFF, 0);
+  valread = recv(client_fd, buffer, BUFF_SIZE, 0);
   if (valread < 0)
   {
     perror("Recv failed");
     exit(EXIT_FAILURE);
   }
-  cmd(buffer);
+  std::istringstream iss(input);
+  iss >> cmd;
+  iss >> fileName;
 }
 void Cmdhandler::ProcessCmd()
 {
-  if (cmd.compare(UPLOAD) == 0)
-  else if (cmd.compare(DOWNLOAD) == 0)
-  else if (cmd.compare(EXIT) == 0)
-  else
-
+  if (cmd == UPLOAD) {
+      std::cout << "Uploading file: " << fileName << "\n";
+  }
+  else if (cmd == DOWNLOAD) {
+    std::cout << "Downloading file: " << fileName << "\n";
+  }
+  else if (cmd == EXIT) {
+    std::cout << "Client requested to exit\n";
+  }
+  else {
+    std::cout << "Invalid command. Available commands: 'upload <filename>', 'download <filename>', 'exit'\n";
+  }
 }
