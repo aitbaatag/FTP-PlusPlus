@@ -1,49 +1,65 @@
-#include "../../inc/Server/Server.hpj6rty t r"
+#include "../../inc/Server/Server.hpp"
 
 Server::Server(int port) :  Socket(port) 
 {
-
+  FD_ZERO(&master_fds);
+  FD_ZERO(&ready_fds);
 }
 
 Server::~Server()
 {
     Server::~Socket();
 }
+std::string Server::get_client_ip(const sockaddr_in& client_addr) {
+    char ip_str[INET_ADDRSTRLEN];
+    inet_ntop(AF_INET, &client_addr.sin_addr, ip_str, INET_ADDRSTRLEN);
+    return std::string(ip_str);
+}
+Server::AcceptConnection()
+{
+  addrlen = sizeof();
+  client_fd = accept(sockfd, (struct sockaddr*)&client_addr, &addrlen);
+  if (client_fd == -1) {
+    std::cerr << "Failed to accept connection\n";
+    exit(1);
+  }
+}
+void Server::HandleNewConnection()
+{
+  std::string clinet_ip;
+  AcceptConnection();
+  client_fds.push_back(client_fd);
+  FD_SET(client_fd, &master_fds);
+  max_fd = std::max(max_fd, client_fd);
+  client_ip = get_client_ip(client_addr);
+  std::cout << "New connection from " << client_ip << " on socket " << client_fd << std::endl;
+}
 
 void Server::StartServer()
 {
     CreateSocket();
-    InitSocketAdd();
+    InitSocketAdd(); // TODO
     BindSocket();
     ListenSocket();
-    std::cout << "Waiting for a connection...\n";
-    AcceptConnection();
-    std::cout << "Connection accepted\n";
+    FD_SET(sockfd, &master_fds); // Add server socket to master set
+    max_fd = sockfd;
+
     while (true)
     {
-
-    // Communication loop with the connected client
-    char buffer[1024];
-    while (true) {
-        memset(buffer, 0, sizeof(buffer)); // Clear the buffer
-        int bytes_read = read(client_fd, buffer, sizeof(buffer) - 1);
-        if (bytes_read > 0) {
-            buffer[bytes_read] = '\0'; // Null-terminate the string
-            std::cout << "Received from client: " << buffer << std::endl;
-
-            // Respond to the clien
-            std::string response = "I get : " + std::string(buffer);
-            write(client_fd, response.c_str(), response.size());
-        } else if (bytes_read == 0) {
-            std::cout << "Client disconnected.\n";
-            break; // Exit loop if the client disconnects
-        } else {
-            std::cerr << "Error reading from client\n";
-            exit(1); // Exit loop on error
+      ready_fds = master_fds;
+      if (select(max_fd + 1, ready_fds, NULL, NULL, NULL) < 0)
+      {
+        std::perror("select error\n");
+        exit(1)
+      }
+      for (int fd, fd <= max_fd, fd++)
+      {
+        if (FD_ISSET(fd, &ready_fds)) {
+          if (fd == sockfd) {
+            // this is a new Connection
+            HandleNewConnection();
+          }
         }
+      }
     }
-
-    // Close client socket after communication ends
-    close(client_fd);
-    }
-}
+}a

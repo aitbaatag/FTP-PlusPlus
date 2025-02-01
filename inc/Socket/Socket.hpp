@@ -9,7 +9,6 @@
 class Socket {
 protected:
     int sockfd;
-    int client_fd;
     int port;
     struct sockaddr_in server_addr;
     socklen_t addrlen;
@@ -19,10 +18,10 @@ public:
     virtual ~Socket();
 
     void CreateSocket();
-    void InitSocketAdd();
+    virtual InitSocketAdd() = 0; // TODO
     void BindSocket();
     void ListenSocket();
-    void AcceptConnection();
+    virtual void AcceptConnection();
     
     int get_client_fd() const;
     int Get_sockfd();

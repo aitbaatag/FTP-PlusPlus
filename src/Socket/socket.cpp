@@ -14,13 +14,6 @@ void Socket::CreateSocket()
     }
 }
 
-void Socket::InitSocketAdd()
-{
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(port);
-    server_addr.sin_addr.s_addr = INADDR_ANY;
-}
-
 void Socket::BindSocket()
 {
     if (bind(sockfd, (struct sockaddr*)&server_addr, sizeof(server_addr)) == -1) {
@@ -37,14 +30,9 @@ void Socket::ListenSocket()
     }
 }
 
-void Socket::AcceptConnection()
+int Socket::AcceptConnection()
 {
-    addrlen = sizeof(server_addr);
-    client_fd = accept(sockfd, (struct sockaddr*)&server_addr, &addrlen);
-    if (client_fd == -1) {
-        std::cerr << "Failed to accept connection\n";
-        exit(1);
-    }
+  // implemented by server class 
 }
 
 int Socket::get_client_fd() const
