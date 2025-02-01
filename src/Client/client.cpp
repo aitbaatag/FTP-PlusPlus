@@ -1,11 +1,21 @@
 #include "../../inc/Client/Client.hpp"
 
-Client::Client(int port) : Socket(port)
+Client::Client(const char *server_ip, int port) : Socket(port), server_ip(server_ip)
 {
 
 }
 Client::~Client()
 {
+}
+void Client::InitSocketAdd()
+{
+  server_addr.sin_family = AF_INET;
+  server_addr.sin_port = htons(port);
+  // Convert IP address from string to binary form
+  if (inet_pton(AF_INET, server_ip, &server_addr.sin_addr) <= 0) {
+    std::perror("Invalid address");
+    exit(EXIT_FAILURE);
+  }
 }
 void Client::ConnectToServer()
 {
@@ -15,37 +25,6 @@ void Client::ConnectToServer()
     }
     std::cout << "Successfully connected to the server\n";
 
-
-
-
-    // Continuous communication loop
-    char buffer[1024];
-    while (true) {
-        // Send a message to the server
-        std::cout << "Enter message to send (type 'exit' to disconnect): ";
-        std::string message;
-        std::getline(std::cin, message);
-        if (message == "exit") {
-            std::cout << "Disconnecting from the server...\n";
-            break;
-        }
-
-        write(sockfd, message.c_str(), message.size());
-
-        // Receive response from the server
-        memset(buffer, 0, sizeof(buffer)); // Clear the buffer
-        int bytes_read = read(sockfd, buffer, sizeof(buffer) - 1);
-        if (bytes_read > 0) {
-            buffer[bytes_read] = '\0'; // Null-terminate the string
-            std::cout << "Received from server: " << buffer << std::endl;
-        } else {
-            std::cerr << "Error reading from server\n";
-            break; // Exit loop on error
-        }
-    }
-
-    // Close the connection when done
-    close(sockfd);
 }
 int Client::Get_sockfd() const
 {

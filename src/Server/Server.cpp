@@ -34,11 +34,16 @@ void Server::HandleNewConnection()
   client_ip = get_client_ip(client_addr);
   std::cout << "New connection from " << client_ip << " on socket " << client_fd << std::endl;
 }
-
+void Server::InitSocketAdd()
+{
+  address.sin_family = AF_INET;
+  address.sin_addr.s_addr = INADDR_ANY;
+  address.sin_port = htons(port);
+}
 void Server::StartServer()
 {
     CreateSocket();
-    InitSocketAdd(); // TODO
+    InitSocketAdd();
     BindSocket();
     ListenSocket();
     FD_SET(sockfd, &master_fds); // Add server socket to master set

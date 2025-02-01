@@ -9,8 +9,10 @@
 #include <arpa/inet.h>
 
 class Client : public Socket {
+private:
+  const char *server_ip;
 public:
-    Client(int port);
+    Client(const char *server_ip, int port);
     ~Client();
 
     void ConnectToServer();

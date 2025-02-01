@@ -16,9 +16,8 @@ protected:
 public:
     Socket(int port);
     virtual ~Socket();
-
     void CreateSocket();
-    virtual InitSocketAdd() = 0; // TODO
+    virtual InitSocketAdd() = 0;
     void BindSocket();
     void ListenSocket();
     virtual void AcceptConnection();
