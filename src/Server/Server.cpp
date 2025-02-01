@@ -63,6 +63,11 @@ void Server::StartServer()
           if (fd == sockfd) {
             // this is a new Connection
             HandleNewConnection();
+            FD_SET(client_fd, &master_fds);
+          }
+          else 
+          {
+            // TODO 
           }
         }
       }
