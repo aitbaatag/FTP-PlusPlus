@@ -6,7 +6,7 @@ int main()
     Client client(21);
     std::string cmd;
 
-    client.CreateSocket();
+    client.CreateTCPIpv4Socket();
     client.InitSocketAdd();
     client.ConnectToServer();
 }

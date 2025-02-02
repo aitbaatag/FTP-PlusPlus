@@ -16,13 +16,12 @@ protected:
 public:
     Socket(int port);
     virtual ~Socket();
-    void CreateSocket();
-    virtual InitSocketAdd() = 0;
+    void CreateTCPIpv4Socket();
+    void InitSocketAdd(); // for server
+    void InitSocketAdd(char *server_ip); // for client
     void BindSocket();
     void ListenSocket();
     virtual void AcceptConnection();
-    
-    int get_client_fd() const;
     int Get_sockfd();
 };
 

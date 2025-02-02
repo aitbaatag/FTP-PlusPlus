@@ -15,10 +15,10 @@ std::string Server::get_client_ip(const sockaddr_in& client_addr) {
     inet_ntop(AF_INET, &client_addr.sin_addr, ip_str, INET_ADDRSTRLEN);
     return std::string(ip_str);
 }
-Server::AcceptConnection()
+void Server::AcceptConnection()
 {
-  addrlen = sizeof();
-  client_fd = accept(sockfd, (struct sockaddr*)&client_addr, &addrlen);
+  addrlen = sizeof(client_addr);
+  this->client_fd = accept(sockfd, (struct sockaddr*)&client_addr, &addrlen);
   if (client_fd == -1) {
     std::cerr << "Failed to accept connection\n";
     exit(1);
@@ -26,7 +26,7 @@ Server::AcceptConnection()
 }
 void Server::HandleNewConnection()
 {
-  std::string clinet_ip;
+  std::string client_ip;
   AcceptConnection();
   client_fds.push_back(client_fd);
   FD_SET(client_fd, &master_fds);
@@ -34,15 +34,10 @@ void Server::HandleNewConnection()
   client_ip = get_client_ip(client_addr);
   std::cout << "New connection from " << client_ip << " on socket " << client_fd << std::endl;
 }
-void Server::InitSocketAdd()
-{
-  address.sin_family = AF_INET;
-  address.sin_addr.s_addr = INADDR_ANY;
-  address.sin_port = htons(port);
-}
+
 void Server::StartServer()
 {
-    CreateSocket();
+    CreateTCPIpv4Socket();
     InitSocketAdd();
     BindSocket();
     ListenSocket();
@@ -52,24 +47,25 @@ void Server::StartServer()
     while (true)
     {
       ready_fds = master_fds;
-      if (select(max_fd + 1, ready_fds, NULL, NULL, NULL) < 0)
+      if (select(max_fd + 1, &ready_fds, NULL, NULL, NULL) < 0)
       {
         std::perror("select error\n");
-        exit(1)
+        exit(1);
       }
-      for (int fd, fd <= max_fd, fd++)
+      for (int fd = 0; fd <= max_fd; fd++)
       {
         if (FD_ISSET(fd, &ready_fds)) {
           if (fd == sockfd) {
             // this is a new Connection
             HandleNewConnection();
-            FD_SET(client_fd, &master_fds);
+            FD_SET(this->client_fd, &master_fds);
           }
-          else 
+          else
           {
-            // TODO 
+            // TODO
+            FD_CLR(fd, &master_fds);
           }
         }
       }
     }
-}a
+}
