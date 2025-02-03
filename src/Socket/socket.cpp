@@ -60,5 +60,4 @@ int Socket::Get_sockfd()
 
 Socket::~Socket()
 {
-    close(sockfd);
 }

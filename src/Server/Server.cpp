@@ -8,7 +8,7 @@ Server::Server(int port) :  Socket(port)
 
 Server::~Server()
 {
-    Server::~Socket();
+
 }
 
 std::string Server::get_client_ip(const sockaddr_in& client_addr) {
