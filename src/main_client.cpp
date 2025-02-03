@@ -3,10 +3,12 @@
 
 int main()
 {
-    Client client(21);
-    std::string cmd;
+  char *ip;
+
+  ip = "127.0.0.1";
+    Client client("127.0.0.1" ,21);
 
     client.CreateTCPIpv4Socket();
-    client.InitSocketAdd();
+    client.InitSocketAdd(ip);
     client.ConnectToServer();
 }

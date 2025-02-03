@@ -9,6 +9,9 @@
 #include <sys/select.h>
 #include <algorithm>
 #include <vector>
+#include <netdb.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
 
 class Server : public Socket {
 private:
@@ -17,6 +20,7 @@ private:
   fd_set master_fds;
   fd_set ready_fds;
   int max_fd;
+  char *server_ip;
   struct sockaddr_in client_addr;
 public:
   Server(int port);
@@ -25,6 +29,10 @@ public:
   void HandleNewConnection();
   std::string get_client_ip(const sockaddr_in& client_addr);
   void AcceptConnection();
+  void HandleClientMessage(int client_fd);
+  int get_port() const;
 };
+
+void PrintServerIP(int port);
 
 #endif // SERVER_HPP
