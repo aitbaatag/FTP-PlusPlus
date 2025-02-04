@@ -2,6 +2,7 @@
 
 Server::Server(int port) :  Socket(port) 
 {
+  cmdhandler = Cmdhandler();
   FD_ZERO(&master_fds);
   FD_ZERO(&ready_fds);
 }
@@ -37,34 +38,12 @@ void Server::HandleNewConnection()
 }
 
  void Server::HandleClientMessage(int client_fd) {
-        char buffer[1024];
-        memset(buffer, 0, sizeof(buffer));
-        
-        int bytes_read = recv(client_fd, buffer, sizeof(buffer) - 1, 0);
-        if (bytes_read <= 0) {
-            if (bytes_read == 0) {
-                std::cout << "Client on socket " << client_fd << " disconnected" << std::endl;
-            } else {
-                perror("recv failed");
-            }
-            
-            // Remove client from our data structures
-            //close(client_fd);
-            //FD_CLR(client_fd, &master_fds);
-            //client_fds.erase(std::remove(client_fds.begin(), client_fds.end(), client_fd), client_fds.end());
-        } else {
-            buffer[bytes_read] = '\0';
-            
-            // Create command handler instance and process the command
-            
-            // Echo back to client
-            std::string rec(buffer);
-            std::string response = "Server received: " + std::string(buffer);
-            std::cout << "I get " + rec << std::endl;
-            send(client_fd, response.c_str(), response.length(), 0);
-        }
-    }
+   cmdhandler.setFdClient(client_fd);
 
+   cmdhandler.setFdClient(client_fd);
+   cmdhandler.GetCmd();
+   cmdhandler.ProcessCmd();
+ }
 void Server::StartServer()
 {
     CreateTCPIpv4Socket();
@@ -92,9 +71,7 @@ void Server::StartServer()
           }
           else
           {
-            // TODO
             HandleClientMessage(client_fd);
-            FD_CLR(fd, &master_fds);
           }
         }
       }

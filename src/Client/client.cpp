@@ -2,7 +2,7 @@
 
 Client::Client(const char *server_ip, int port) : Socket(port), server_ip(server_ip)
 {
-
+  (void)this->server_ip;
 }
 
 Client::~Client()

@@ -1,6 +1,7 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 #include "../Socket/Socket.hpp"
+#include "../Server/Cmdhandler.hpp"
 #include <iostream>
 #include <string>
 #include <cstring>
@@ -17,10 +18,10 @@ class Server : public Socket {
 private:
   std::vector<int> client_fds;
   int client_fd;
+  Cmdhandler cmdhandler;
   fd_set master_fds;
   fd_set ready_fds;
   int max_fd;
-  char *server_ip;
   struct sockaddr_in client_addr;
 public:
   Server(int port);

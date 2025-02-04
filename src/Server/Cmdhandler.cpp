@@ -1,6 +1,9 @@
 #include "../../inc/Server/Cmdhandler.hpp"
 
-Cmdhandler::Cmdhandler(int client_fd) : buffer({0})
+Cmdhandler::Cmdhandler()
+{
+}
+void Cmdhandler::setFdClient(int client_fd)
 {
   this->client_fd = client_fd;
 }
@@ -8,7 +11,7 @@ void Cmdhandler::GetCmd()
 {
   int valread;
 
-  valread = recv(client_fd, buffer, BUFF_SIZE, 0);
+  valread = recv(client_fd, buffer, CBUFF_SIZE, 0);
   if (valread < 0)
   {
     perror("Recv failed");
@@ -28,7 +31,7 @@ void Cmdhandler::ProcessCmd()
     std::cout << "uplaod\n";
   }
   else if (cmd == DOWNLOAD) { 
-    filehandler.DOWNLOAD(fileName);
+    // filehandler.DOWNLOAD(fileName);
     std::cout << "download\n";
   }
   else if (cmd == EXIT) {

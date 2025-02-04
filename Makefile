@@ -8,10 +8,10 @@ INC_DIR = inc
 
 # Compiler and flags
 CC = g++
-CFLAGS = -Wall -Wextra -std=c++98 -g3
+CFLAGS = -Wall -Wextra -std=c++17 -g3
 
 CLIENT_SRCS = $(addprefix $(SRC_DIR)/Client/, client.cpp)
-SERVER_SRCS = $(addprefix $(SRC_DIR)/Server/, Server.cpp)
+SERVER_SRCS = $(addprefix $(SRC_DIR)/Server/, Server.cpp Cmdhandler.cpp FileHandler.cpp)
 SOCKET_SRCS = $(addprefix $(SRC_DIR)/Socket/, socket.cpp)
 MAIN_SRCS = $(addprefix $(SRC_DIR)/, main_client.cpp main_server.cpp)
 
