@@ -95,7 +95,7 @@ void Server::StartServer()
           {
             // TODO
             HandleClientMessage(client_fd);
-            FD_CLR(fd, &master_fds);
+            // FD_CLR(fd, &master_fds);
           }
         }
       }
