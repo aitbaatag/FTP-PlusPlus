@@ -1,65 +1,87 @@
 #include "../../inc/Server/FileHandler.hpp"
 
-FileHandler::FileHandler(int client_fd)
-{
-  this->client_fd = client_fd;
+FileHandler::FileHandler(const std::string& storagePath) : storagePath(storagePath) {
+    std::filesystem::create_directories(storagePath);
 }
 
-int FileHandler::OpenFile(std::string FilePath) {
-  File(FilePath);
-  if (File.is_open() <= 0) {
-    std::cerr << "Unable to create file" << std::endl;
-    return 1;
-  }
-  return 0;
-}
-
-bool FileHandler::UPLOADD(std::string FileName) {
-  std::string filepath;
-  filepath = storagePath + FileName;
-
-  if (OpenFile(filepath, std::ios::binary)) {
-    send(client_fd, "ERRO\n", 6, 0);
-    return;
-  }
-  char buffer[BUFF_SIZE];
-  size_t totalBytes = 0;
-
-  while (true) {
-    int valread = recv(client_fd, buffer, BUFF_SIZE, 0);
-    buffer[valread] = '\0';
-    if (valread < 0)
-    {
-      send(client_fd, "ERROR\n", 6);
-      break ;
+bool FileHandler::OpenFile(std::fstream& file, const std::string& filepath, std::ios_base::openmode mode) {
+    file.open(filepath, mode);
+    if (!file.is_open()) {
+        std::cerr << "Unable to open file: " << filepath << std::endl;
+        return false;
     }
-    else if (valread ==  && buffer[0] == '\0')
-    {
-      break ;
+    return true;
+}
+
+bool FileHandler::fileExists(const std::string& filepath) {
+    return std::filesystem::exists(filepath);
+}
+
+bool FileHandler::UPLOAD(int client_fd, const std::string& fileName) {
+    std::string filepath = storagePath + fileName;
+
+    if (fileExists(filepath)) {
+        send(client_fd, "ERROR: File already exists\n", 27, 0);
+        return false;
     }
-    File.write(buffer, valread);
-    totalBytes += valread;
-  }
-  File.close;
-  send(client_fd, "SUCCESS", 7, 0);
+
+    std::fstream file;
+    if (!OpenFile(file, filepath, std::ios::binary | std::ios::out)) {
+        send(client_fd, "ERROR: Unable to create file\n", 28, 0);
+        return false;
+    }
+
+    char buffer[BUFF_SIZE];
+    size_t totalBytes = 0;
+
+    while (true) {
+        int valread = recv(client_fd, buffer, BUFF_SIZE, 0);
+        if (valread < 0) {
+            send(client_fd, "ERROR: File transfer failed\n", 27, 0);
+            file.close();
+            return false;
+        } else if (valread == 0) {
+            break; // End of file
+        }
+        file.write(buffer, valread);
+        totalBytes += valread;
+    }
+
+    file.close();
+    send(client_fd, "SUCCESS: File uploaded\n", 23, 0);
+    return true;
 }
 
-bool FileHandler::DOWNLOAD(std::string FileName) {
-  std::string filepath;
+bool FileHandler::DOWNLOAD(int client_fd, const std::string& fileName) {
+    std::string filepath = storagePath + fileName;
 
-  filepath = storagePath + FileName;
-  if (OpenFile(filepath, std::ios::binary)) {
-    send(client_fd, "ERRO\n", 6, 0);
-    return;
-  }
-  char buffer[BUFF_SIZE];
-  size_t totalBytes = 0;
+    if (!fileExists(filepath)) {
+        send(client_fd, "ERROR: File not found\n", 22, 0);
+        return false;
+    }
 
-  while (int valread = File.read(buffer, sizeof(buffer)) {
-    send(client_fd, buffer, BUFF_SIZE, 0);
-    totalBytes += valread;
-  }
-  File.close;
-  send(client_fd, "SUCCESS", 7, 0);
+    std::fstream file;
+    if (!OpenFile(file, filepath, std::ios::binary | std::ios::in)) {
+        send(client_fd, "ERROR: Unable to open file\n", 26, 0);
+        return false;
+    }
+
+    char buffer[BUFF_SIZE];
+    size_t totalBytes = 0;
+
+    while (!file.eof()) {
+        file.read(buffer, sizeof(buffer));
+        int valread = file.gcount();
+        if (valread > 0) {
+            if (send(client_fd, buffer, valread, 0) < 0) {
+                file.close();
+                return false;
+            }
+            totalBytes += valread;
+        }
+    }
+
+    file.close();
+    send(client_fd, "SUCCESS: File downloaded\n", 25, 0);
+    return true;
 }
-

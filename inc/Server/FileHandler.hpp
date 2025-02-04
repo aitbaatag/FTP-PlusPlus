@@ -4,17 +4,18 @@
 #include <iostream>
 #include <filesystem>
 #include <fstream>
+#include <cstring>
 #define BUFF_SIZE 1024
 class FileHandler {
   private:
-    std::ofstream File;
-    std::string storagePath = "/home/user/ftp_storage/";
+    std::string storagePath;
+
+    bool OpenFile(const std::string &filepath);
+    bool fileExists(const std::string &filepath);
   public:
-    FileHandler();
-    ~FoileHnaler();
-    int CreateFile();
-    bool UPLOADD();
-    bool DOWNLOAD();
-    void ListFiles();
+    FileHandler(int client_fd);
+    bool UPLOADD(int client_fd, const std::string& fileName);
+    bool DOWNLOAD(int client_fd, const std::string& fileName);
+    // void ListFiles(); // TODO
 }
 #endif

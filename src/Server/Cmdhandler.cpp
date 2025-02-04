@@ -21,18 +21,20 @@ void Cmdhandler::GetCmd()
 }
 void Cmdhandler::ProcessCmd()
 {
-  FileHandler filehandler(); // TODO
+  // FileHandler filehandler(client_fd);
 
   if (cmd == UPLOAD) {
-    filehandler.UPLOAD(fileName);
+    // filehandler.UPLOAD(fileName);
+    std::cout << "uplaod\n";
   }
-  else if (cmd == DOWNLOAD) {
+  else if (cmd == DOWNLOAD) { 
     filehandler.DOWNLOAD(fileName);
+    std::cout << "download\n";
   }
   else if (cmd == EXIT) {
-    exit(1);
+    send(client_fd, "Goodbye\n", 12, 0);
   }
   else {
-    std::cout << "Invalid command. Available commands: 'upload <filename>', 'download <filename>', 'exit'\n";
+    send(client_fd, "Unknown command\n", 20, 0);
   }
 }
