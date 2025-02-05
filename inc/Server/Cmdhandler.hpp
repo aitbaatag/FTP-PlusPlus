@@ -6,6 +6,9 @@
 #include "FileHandler.hpp"
 #define UPLOAD "upload"
 #define DOWNLOAD "download"
+#define LIST "LIST"
+#define CWD "CWD"
+#define PWD "PWD"
 #define EXIT "exit"
 #define CBUFF_SIZE 256
 

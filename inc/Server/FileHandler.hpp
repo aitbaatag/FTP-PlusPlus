@@ -10,17 +10,25 @@
 #include <netinet/in.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <unordered_map>
+#include <unistd.h>
+#include <fcntl.h>
+namespace fs = std::filesystem;
 #define BUFF_SIZE 1024
 class FileHandler {
   private:
-    std::string storagePath;
+    fs::path current_dir;
+    fs::path new_path;
 
-    bool OpenFile(std::fstream &file, const std::string &filepath, std::ios_base::openmode mode);
+    bool OpenFile(std::fstream &file, fs::path filepath, std::ios_base::openmode mode, int client_fd);
     bool fileExists(const std::string &filepath);
   public:
-    FileHandler(const std::string &storagePath);
-    bool UPLOAD(int client_fd, const std::string& fileName);
-    bool DOWNLOAD(int client_fd, const std::string& fileName);
-    // void ListFiles();
+    FileHandler();
+    bool uPLOAD(int client_fd, const std::string& fileName);
+    bool dOWNLOAD(int client_fd, const std::string& fileName);
+    void ChangeDirectory(int client_fd, const std::string& new_dir);
+    void SendResponse(int client_fd, const std::string& response);
+    void ListFiles(int client_fd);
+    fs::path GetCurrent_dir() const;
 };
 #endif

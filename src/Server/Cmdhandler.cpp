@@ -24,18 +24,32 @@ void Cmdhandler::GetCmd()
 }
 void Cmdhandler::ProcessCmd()
 {
-  // FileHandler filehandler(client_fd);
+  FileHandler filehandler;
 
   if (cmd == UPLOAD) {
-    // filehandler.UPLOAD(fileName);
+    filehandler.uPLOAD(client_fd, fileName);
+    send(client_fd, "\n", 1, 0);
     std::cout << "uplaod\n";
   }
-  else if (cmd == DOWNLOAD) { 
-    // filehandler.DOWNLOAD(fileName);
+  else if (cmd == DOWNLOAD) {
+    filehandler.dOWNLOAD(client_fd, fileName);
+    send(client_fd, "\n", 1, 0);
     std::cout << "download\n";
   }
   else if (cmd == EXIT) {
     send(client_fd, "Goodbye\n", 12, 0);
+  }
+  else if (cmd == LIST)
+  {
+    filehandler.ListFiles(client_fd);
+  }
+  else if (cmd == CWD)
+  {
+    filehandler.ChangeDirectory(client_fd, fileName);
+  }
+  else if (cmd == PWD)
+  {
+    filehandler.SendResponse(client_fd, "\"" + filehandler.GetCurrent_dir().string() + "\"\r\n");
   }
   else {
     send(client_fd, "Unknown command\n", 20, 0);
