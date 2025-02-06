@@ -3,7 +3,7 @@
 FileManager::FileManager(int fdsocket) {
   this->fdsocket = fdsocket;
 }
-bool FileManager::OpenFile(std::fstream& file, fs::path filepath, std::ios_base::openmode mode) {
+bool FileManager::openfile(std::fstream& file, fs::path filepath, std::ios_base::openmode mode) {
     file.open(filepath, mode);
     if (!file.is_open()) {
       std::cout << "Failed to open file\r\n";
@@ -12,12 +12,12 @@ bool FileManager::OpenFile(std::fstream& file, fs::path filepath, std::ios_base:
     return true;
 }
 
-bool FileManager::fileExists(const std::string& filepath) {
+bool FileManager::fileexists(const std::string& filepath) {
     return std::filesystem::exists(filepath);
 }
 void FileManager::download(const std::string& fileName) {
   std::fstream file;
-  if (!OpenFile(file, file_path, std::ios::binary | std::ios::out, client_fd)) {
+  if (!openfile(file, fileName, std::ios::binary | std::ios::out)) {
     std::cerr << "Failed to create file\n";
     return ;
   }
@@ -41,13 +41,13 @@ void FileManager::download(const std::string& fileName) {
     file.close();
     std::cout << "SUCCESS: File downloaded\n";
 }
-void FileHandler::upload(const std::string& fileName) {
-  if (!fs::exists(file_path)) {
+void FileManager::upload(const std::string& fileName) {
+  if (!fs::exists(fileName)) {
     std::cerr << "File not found\r\n";
     return ;
   }
   std::fstream file;
-  if (!OpenFile(file, file_path, std::ios::binary | std::ios::in, client_fd)) {
+  if (!openfile(file, fileName, std::ios::binary | std::ios::in)) {
     std::cerr << "ERROR: Unable to open file\n";
     return ;
   }
@@ -57,7 +57,7 @@ void FileHandler::upload(const std::string& fileName) {
     file.read(buffer, sizeof(buffer));
     int valread = file.gcount();
     if (valread > 0) {
-      if (send(client_fd, buffer, valread, 0) < 0) {
+      if (send(fdsocket, buffer, valread, 0) < 0) {
         file.close();
         return ;
       }

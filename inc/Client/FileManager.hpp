@@ -18,8 +18,9 @@ namespace fs = std::filesystem;
 class FileManager {
   private:
     int fdsocket;
-    bool FileManager::OpenFile(std::fstream& file, fs::path filepath, std::ios_base::openmode mode);
-    bool FileManager::fileExists(const std::string& filepath);
+
+    bool openfile(std::fstream& file, fs::path filepath, std::ios_base::openmode mode);
+    bool fileexists(const std::string& filepath);
   public:
     FileManager(int fdsocket);
     void download(const std::string &filename);

@@ -25,18 +25,18 @@ std::string Client::ReceiveMessage() {
   buffer[bytes_read] = '\0';
   return std::string(buffer);
 }
-Cinput &SplitInput(const std::string &input)
+Client::Cinput Client::SplitInput(const std::string &input)
 {
   Cinput cinput;
   std::istringstream iss(input);
   iss >> cinput.cmd;
-  iss >> cinout.filename;
+  iss >> cinput.filename;
   return cinput;
 }
 void Client::ConnectToServer()
 {
   FileManager filemanager(sockfd);
-  std::striinputt;
+  std::string input;
     if (connect(sockfd, (sockaddr*)&server_addr, sizeof(server_addr)) == -1) {
         std::cerr << "Failed to connect to the server\n";
         exit (1);
@@ -46,13 +46,18 @@ void Client::ConnectToServer()
     while (true)
     {
       std::getline(std::cin, input);
-      if (SplitInput(input).cmd.equle("upload"))
+      Cinput cinput = SplitInput(input);
+      if (cinput.cmd == "upload")
       {
-        FileManager.download(SplitInput(input).filename;
+        filemanager.download(cinput.filename);
       }
-      else if (SplitInput(input).cmd.equle("download"))
+      else if (cinput.cmd == "download")
       {
-        FileManager.upload(SplitInput(input).filename);
+        filemanager.upload(cinput.filename);
+      }
+      else
+      {
+        std::cout << "Invalid command. Use 'upload <filename>' or 'download <filename>'.\n";
       }
       std::cout << ReceiveMessage();
     }
