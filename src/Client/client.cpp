@@ -2,7 +2,7 @@
 
 Client::Client(const char *server_ip, int port) : Socket(port), server_ip(server_ip)
 {
-  (void)this->server_ip;
+  (void)server_ip;
 }
 
 Client::~Client()
@@ -25,9 +25,18 @@ std::string Client::ReceiveMessage() {
   buffer[bytes_read] = '\0';
   return std::string(buffer);
 }
+Cinput &SplitInput(const std::string &input)
+{
+  Cinput cinput;
+  std::istringstream iss(input);
+  iss >> cinput.cmd;
+  iss >> cinout.filename;
+  return cinput;
+}
 void Client::ConnectToServer()
 {
-  std::string message;
+  FileManager filemanager(sockfd);
+  std::striinputt;
     if (connect(sockfd, (sockaddr*)&server_addr, sizeof(server_addr)) == -1) {
         std::cerr << "Failed to connect to the server\n";
         exit (1);
@@ -36,8 +45,15 @@ void Client::ConnectToServer()
 
     while (true)
     {
-      std::getline(std::cin, message);
-      SendMessage(message);
+      std::getline(std::cin, input);
+      if (SplitInput(input).cmd.equle("upload"))
+      {
+        FileManager.download(SplitInput(input).filename;
+      }
+      else if (SplitInput(input).cmd.equle("download"))
+      {
+        FileManager.upload(SplitInput(input).filename);
+      }
       std::cout << ReceiveMessage();
     }
 }

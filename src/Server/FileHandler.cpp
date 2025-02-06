@@ -4,7 +4,7 @@ FileHandler::FileHandler() {
   current_dir = fs::current_path();
 }
 void FileHandler::ChangeDirectory(int client_fd, const std::string& new_dir){
-  new_path = current_dir / new_dir;
+  fs::path new_path = current_dir / new_dir;
   if (fs::exists(new_path) && fs::is_directory(new_path)) {
     current_dir = new_path;
     std::cout << current_dir << std::endl;
@@ -54,7 +54,7 @@ bool FileHandler::uPLOAD(int client_fd, const std::string& fileName) {
   fs::path file_path = current_dir / fileName;
   std::fstream file;
   if (!OpenFile(file, file_path, std::ios::binary | std::ios::out, client_fd)) {
-    SendResponse(client_fd, "Failed to create file\r\n");
+    SendResponse(client_fd, "Server Failed to create file\r\n");
     std::cerr << "Failed to create file\n";
     return false;
   }

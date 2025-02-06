@@ -7,7 +7,11 @@
 #include <cstring>
 #include <unistd.h>
 #include <arpa/inet.h>
-
+#include "FileManager.hpp"
+typedef struct Sinput {
+  std::string &filename;
+  std::string &cmd;
+} Cinput;
 class Client : public Socket {
 private:
    const char *server_ip;
