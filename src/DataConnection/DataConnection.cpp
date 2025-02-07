@@ -1,6 +1,4 @@
 #include "../../inc/DataConnection/DataConnection.hpp"
-#include <netinet/in.h>
-#include <sys/socket.h>
 
 DataConnection::DataConnection() : Socket(0) {}
 int DataConnection::CreateDataConnection(int client_fd, std::string server_ip) {
