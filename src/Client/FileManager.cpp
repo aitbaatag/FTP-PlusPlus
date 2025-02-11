@@ -17,6 +17,10 @@ bool FileManager::fileexists(const std::string& filepath) {
 }
 void FileManager::download(const std::string& fileName) {
   std::fstream file;
+  // TODO
+  // recv data port
+  // open new socket
+  // 
   if (!openfile(file, fileName, std::ios::binary | std::ios::out)) {
     std::cerr << "Failed to create file\n";
     return ;
