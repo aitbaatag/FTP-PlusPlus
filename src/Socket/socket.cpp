@@ -46,5 +46,5 @@ void Socket::AcceptConnection() {
 }
 
 int Socket::Get_sockfd() { return sockfd; }
-
+void Socket::set_port(int new_port) { this->port = new_port; }
 Socket::~Socket() {}

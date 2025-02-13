@@ -17,6 +17,9 @@ protected:
   int CreateDataConnection(int client_fd, const std::string &server_ip = "");
   int AcceptDataConnection(int client_fd);
   int get_data_socket() const;
+
+private:
+  int recv_data_port(int clinet_fd);
 };
 
 #endif

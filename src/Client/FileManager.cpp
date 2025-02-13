@@ -24,8 +24,8 @@ void FileManager::download(const std::string &fileName) {
   // TODO
   // recv data port
   // open new socket
-  dataconnection.CreateDataConnection(server_ip);
-  int data_socket; // get new socket fd to transfer data
+  int data_socket = dataconnection.CreateClientDataConnection(
+      fdsocket); // get new socket fd to transfer data
   if (!openfile(file, fileName, std::ios::binary | std::ios::out)) {
     std::cerr << "Failed to create file\n";
     return;
