@@ -5,13 +5,13 @@
 
 class ClientDataConnection : public DataConnection {
 public:
-    ClientDataConnection(const std::string& server_ip);
-    ~ClientDataConnection();
+  ClientDataConnection(const std::string &server_ip);
+  ~ClientDataConnection();
 
-    int CreateClientDataConnection(int client_fd);
+  int CreateClientDataConnection(int client_fd);
 
 private:
-    std::string server_ip;
+  std::string server_ip;
 };
 
 #endif
