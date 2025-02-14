@@ -1,4 +1,5 @@
 #include "../../inc/Server/Cmdhandler.hpp"
+#include <iostream>
 
 Cmdhandler::Cmdhandler() {}
 void Cmdhandler::setFdClient(int client_fd) { this->client_fd = client_fd; }
@@ -36,6 +37,7 @@ void Cmdhandler::ProcessCmd() {
     filehandler.SendResponse(
         client_fd, "\"" + filehandler.GetCurrent_dir().string() + "\"\r\n");
   } else {
+    std::cout << cmd << fileName << std::endl;
     send(client_fd, "Unknown command\n", 20, 0);
   }
 }

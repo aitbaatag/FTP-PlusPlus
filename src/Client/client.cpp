@@ -1,4 +1,5 @@
 #include "../../inc/Client/Client.hpp"
+#include <iostream>
 
 Client::Client(const char *server_ip, int port)
     : Socket(port), server_ip(server_ip) {
@@ -42,11 +43,15 @@ void Client::ConnectToServer() {
   while (true) {
     std::getline(std::cin, input);
     Cinput cinput = SplitInput(input);
-    if (cinput.cmd == "upload") {
+    if ((cinput.cmd == "LIST" || cinput.cmd == "PWD" || cinput.cmd == "CWD") &&
+        cinput.filename.empty()) {
+      SendMessage(cinput.cmd);
+    } else if (cinput.cmd == "upload") {
       filemanager.download(cinput.filename);
     } else if (cinput.cmd == "download") {
       filemanager.upload(cinput.filename);
     } else {
+      std::cout << "I get " << cinput.cmd << std::endl;
       std::cout << "Invalid command. Use 'upload <filename>' or 'download "
                    "<filename>'.\n";
     }
