@@ -46,9 +46,9 @@ void Client::ConnectToServer() {
     if ((cinput.cmd == "LIST" || cinput.cmd == "PWD" || cinput.cmd == "CWD") &&
         cinput.filename.empty()) {
       SendMessage(cinput.cmd);
-    } else if (cinput.cmd == "upload") {
-      filemanager.download(cinput.filename);
     } else if (cinput.cmd == "download") {
+      filemanager.download(cinput.filename);
+    } else if (cinput.cmd == "upload") {
       filemanager.upload(cinput.filename);
     } else {
       std::cout << "I get " << cinput.cmd << std::endl;

@@ -25,7 +25,7 @@ void FileManager::download(const std::string &fileName) {
   // recv data port
   // open new socket
   int data_socket = dataconnection.CreateClientDataConnection(
-      fdsocket); // get new socket fd to transfer data
+      fdsocket); // get new socket fd to transfer data // TODO need fix
   if (!openfile(file, fileName, std::ios::binary | std::ios::out)) {
     std::cerr << "Failed to create file\n";
     return;
@@ -43,6 +43,7 @@ void FileManager::download(const std::string &fileName) {
     } else if (valread == 0) {
       break; // End of file
     }
+    write(1, buffer, valread);
     file.write(buffer, valread);
     totalBytes += valread;
   }

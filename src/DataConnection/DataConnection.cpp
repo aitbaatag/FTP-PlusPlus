@@ -19,6 +19,7 @@ void DataConnection::SendDataPort(int data_port, int client_fd) {
 }
 
 void DataConnection::ConnectToServer(int data_port) {
+  (void)data_port;
   // server_addr.sin_port = htons(data_port);
   if (connect(sockfd, (sockaddr *)&server_addr, sizeof(server_addr)) == -1) {
     std::cerr << "Failed to connect to the server (data connection)\n";
