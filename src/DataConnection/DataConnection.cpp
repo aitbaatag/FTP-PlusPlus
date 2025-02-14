@@ -58,7 +58,7 @@ int DataConnection::CreateDataConnection(int client_fd,
     ConnectToServer(data_port);
     return sockfd; // data socket
   }
-  return AcceptDataConnection(client_fd); // data socket for server
+  return AcceptDataConnection(client_fd);
 }
 // sockfd ==> data socket
 int DataConnection::AcceptDataConnection(int client_fd) {

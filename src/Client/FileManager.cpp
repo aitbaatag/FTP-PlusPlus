@@ -35,7 +35,7 @@ void FileManager::download(const std::string &fileName) {
   size_t totalBytes = 0;
 
   while (true) {
-    int valread = recv(fdsocket, buffer, BUFF_SIZE, 0);
+    int valread = recv(data_socket, buffer, BUFF_SIZE, 0);
     if (valread < 0) {
       std::cerr << "ERROR: File transfer failed\n";
       file.close();

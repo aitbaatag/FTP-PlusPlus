@@ -83,6 +83,8 @@ bool FileHandler::uPLOAD(int client_fd, const std::string &fileName) {
 
 bool FileHandler::dOWNLOAD(int client_fd, const std::string &fileName) {
   fs::path file_path = current_dir / fileName;
+  ServerDataConnection serverdataconnection;
+  int data_socket = serverdataconnection.CreateServerDataConnection(client_fd);
   if (!fs::exists(file_path)) {
     SendResponse(client_fd, "File not found\r\n");
     return false;
@@ -99,7 +101,7 @@ bool FileHandler::dOWNLOAD(int client_fd, const std::string &fileName) {
     file.read(buffer, sizeof(buffer));
     int valread = file.gcount();
     if (valread > 0) {
-      if (send(client_fd, buffer, valread, 0) < 0) {
+      if (send(data_socket, buffer, valread, 0) < 0) {
         file.close();
         return false;
       }
