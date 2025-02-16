@@ -11,7 +11,7 @@
 #include <unistd.h>
 class Client : public Socket {
 private:
-  const char *server_ip;
+  const std::string &server_ip;
 
   struct Cinput {
     std::string filename;
@@ -19,7 +19,7 @@ private:
   };
 
 public:
-  Client(const char *server_ip, int port);
+  Client(const std::string &server_ip, int port);
   ~Client();
   void ConnectToServer();
   int Get_sockfd() const;

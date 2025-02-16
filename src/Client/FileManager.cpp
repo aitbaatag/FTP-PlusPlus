@@ -6,7 +6,6 @@
 FileManager::FileManager(int fdsocket, const std::string &server_ip)
     : server_ip(server_ip) {
   this->fdsocket = fdsocket;
-  std::cout << "-----------------" << server_ip << std::endl;
 }
 bool FileManager::openfile(std::fstream &file, fs::path filepath,
                            std::ios_base::openmode mode) {
@@ -28,8 +27,6 @@ void FileManager::download(const std::string &fileName) {
     perror("send failed\n");
     return;
   }
-  std::cout << " filemanager class server ip " << server_ip << "__"
-            << std::endl;
   // Receive the data port from the server and connect to the server
   ClientDataConnection dataconnection(server_ip);
   int data_socket = dataconnection.CreateClientDataConnection(

@@ -82,7 +82,6 @@ int DataConnection::CreateDataConnection(int client_fd,
       exit(1);
     }
     char *c_server_ip = const_cast<char *>(server_ip.c_str());
-    std::cout << "server ip --- " << server_ip << std::endl;
     set_port(data_port);
     InitSocketAdd(c_server_ip);
     ConnectToServer(data_port);

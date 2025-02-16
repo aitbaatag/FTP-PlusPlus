@@ -2,9 +2,8 @@
 #include <iostream>
 
 int main() {
-  char *ip;
+  const std::string &ip = "127.0.0.1";
 
-  ip = "127.0.0.1";
   Client client("127.0.0.1", 2000);
 
   client.CreateTCPIpv4Socket();
