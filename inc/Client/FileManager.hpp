@@ -24,6 +24,7 @@ private:
   bool openfile(std::fstream &file, fs::path filepath,
                 std::ios_base::openmode mode);
   bool fileexists(const std::string &filepath);
+  std::string ReceiveMessage();
 
 public:
   FileManager(int fdsocket, const std::string &server_ip);

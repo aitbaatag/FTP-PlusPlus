@@ -51,6 +51,12 @@ bool FileHandler::fileExists(const std::string &filepath) {
 }
 
 bool FileHandler::uPLOAD(int client_fd, const std::string &fileName) {
+  ServerDataConnection serverdataconnection;
+  int data_socket = serverdataconnection.CreateServerDataConnection(client_fd);
+  if (data_socket < 0) {
+    SendResponse(client_fd, "425 Can't open data connection\r\n");
+    return false;
+  }
   fs::path file_path = current_dir / fileName;
   std::fstream file;
   if (!OpenFile(file, file_path, std::ios::binary | std::ios::out, client_fd)) {
@@ -59,12 +65,11 @@ bool FileHandler::uPLOAD(int client_fd, const std::string &fileName) {
     return false;
   }
 
-  // TODO int new_dataClient = CreateDataConnection(clinet_fd);
   char buffer[BUFF_SIZE];
   size_t totalBytes = 0;
 
   while (true) {
-    int valread = recv(client_fd, buffer, BUFF_SIZE, 0);
+    int valread = recv(data_socket, buffer, BUFF_SIZE, 0);
     if (valread < 0) {
       send(client_fd, "ERROR: File transfer failed\n", 27, 0);
       file.close();
@@ -77,7 +82,7 @@ bool FileHandler::uPLOAD(int client_fd, const std::string &fileName) {
   }
 
   file.close();
-  send(client_fd, "SUCCESS: File uploaded\n", 23, 0);
+  send(client_fd, "226 Transfer complete\r\n", 23, 0);
   return true;
 }
 bool FileHandler::dOWNLOAD(int client_fd, const std::string &fileName) {

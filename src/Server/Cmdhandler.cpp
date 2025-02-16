@@ -35,7 +35,6 @@ void Cmdhandler::ProcessCmd() {
     filehandler.SendResponse(
         client_fd, "\"" + filehandler.GetCurrent_dir().string() + "\"\r\n");
   } else {
-    std::cout << cmd << fileName << std::endl;
     send(client_fd, "Unknown command\n", 20, 0);
   }
 }

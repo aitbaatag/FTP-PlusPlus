@@ -45,6 +45,7 @@ void Client::ConnectToServer() {
          cinput.cmd == "exit") &&
         cinput.filename.empty()) {
       SendMessage(cinput.cmd);
+      std::cout << ReceiveMessage();
       if (cinput.cmd == "exit") {
         std::cout << ReceiveMessage();
         close(sockfd);
@@ -54,9 +55,6 @@ void Client::ConnectToServer() {
       filemanager.download(cinput.filename);
     } else if (cinput.cmd == "upload") {
       filemanager.upload(cinput.filename);
-    } else {
-      std::cout << "Invalid command. Use 'upload <filename>' or 'download "
-                   "<filename>'.\n";
     }
     std::cout << ReceiveMessage();
   }

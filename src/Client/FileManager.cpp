@@ -16,6 +16,16 @@ bool FileManager::openfile(std::fstream &file, fs::path filepath,
   }
   return true;
 }
+std::string FileManager::ReceiveMessage() {
+  char buffer[1024] = {0};
+  int bytes_read = recv(fdsocket, buffer, 1024, 0);
+  if (bytes_read < 0) {
+    perror("Receive failed");
+    return "";
+  }
+  buffer[bytes_read] = '\0';
+  return std::string(buffer);
+}
 
 bool FileManager::fileexists(const std::string &filepath) {
   return std::filesystem::exists(filepath);
@@ -53,9 +63,18 @@ void FileManager::download(const std::string &fileName) {
   }
 
   file.close();
-  std::cout << "SUCCESS: File downloaded\n";
+  std::cout << ReceiveMessage();
 }
 void FileManager::upload(const std::string &fileName) {
+  // Send the download commande to the server
+  std::string message = "upload " + fileName;
+  if (send(fdsocket, message.c_str(), message.length(), 0) < 0) {
+    perror("send failed\n");
+    return;
+  }
+  // Receive the data port from the server and connect to the server
+  ClientDataConnection dataconnection(server_ip);
+  int data_socket = dataconnection.CreateClientDataConnection(fdsocket);
   if (!fs::exists(fileName)) {
     std::cerr << "File not found\r\n";
     return;
@@ -71,7 +90,7 @@ void FileManager::upload(const std::string &fileName) {
     file.read(buffer, sizeof(buffer));
     int valread = file.gcount();
     if (valread > 0) {
-      if (send(fdsocket, buffer, valread, 0) < 0) {
+      if (send(data_socket, buffer, valread, 0) < 0) {
         file.close();
         return;
       }
@@ -79,6 +98,6 @@ void FileManager::upload(const std::string &fileName) {
     }
   }
   file.close();
-  std::cout << "SUCCESS: File uploaded\n";
+  std::cout << ReceiveMessage();
   return;
 }
