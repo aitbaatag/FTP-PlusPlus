@@ -1,4 +1,5 @@
 #include "../../inc/Socket/Socket.hpp"
+#include <iostream>
 
 Socket::Socket(int port) { this->port = port; }
 
@@ -21,7 +22,8 @@ void Socket::InitSocketAdd(char *server_ip) {
   server_addr.sin_port = htons(port);
   // Convert IP address from string to binary form
   if (inet_pton(AF_INET, server_ip, &server_addr.sin_addr) <= 0) {
-    std::perror("Invalid address");
+    std::perror("Invalid address %s\n");
+    std::cout << server_ip << std::endl;
     exit(EXIT_FAILURE);
   }
 }

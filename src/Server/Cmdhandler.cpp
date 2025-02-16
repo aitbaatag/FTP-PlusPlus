@@ -22,11 +22,9 @@ void Cmdhandler::ProcessCmd() {
   if (cmd == UPLOAD) {
     filehandler.uPLOAD(client_fd, fileName);
     send(client_fd, "\n", 1, 0);
-    std::cout << "uplaod\n";
   } else if (cmd == DOWNLOAD) {
     filehandler.dOWNLOAD(client_fd, fileName);
     send(client_fd, "\n", 1, 0);
-    std::cout << "download\n";
   } else if (cmd == EXIT) {
     send(client_fd, "Goodbye\n", 12, 0);
   } else if (cmd == LIST) {

@@ -80,36 +80,57 @@ bool FileHandler::uPLOAD(int client_fd, const std::string &fileName) {
   send(client_fd, "SUCCESS: File uploaded\n", 23, 0);
   return true;
 }
-
 bool FileHandler::dOWNLOAD(int client_fd, const std::string &fileName) {
   fs::path file_path = current_dir / fileName;
-  ServerDataConnection serverdataconnection;
-  int data_socket = serverdataconnection.CreateServerDataConnection(client_fd);
+
+  // Check if the file exists
   if (!fs::exists(file_path)) {
-    SendResponse(client_fd, "File not found\r\n");
+    SendResponse(client_fd, "550 File not found\r\n");
     return false;
   }
-  std::fstream file;
-  if (!OpenFile(file, file_path, std::ios::binary | std::ios::in, client_fd)) {
-    SendResponse(client_fd, "Failed to open file\r\n");
-    std::cerr << "ERROR: Unable to open file\n";
+
+  // Create a data connection
+  ServerDataConnection serverDataConnection;
+  int data_socket = serverDataConnection.CreateServerDataConnection(client_fd);
+  if (data_socket < 0) {
+    SendResponse(client_fd, "425 Can't open data connection\r\n");
     return false;
   }
+
+  // Open the file
+  std::ifstream file(file_path, std::ios::binary);
+  if (!file.is_open()) {
+    SendResponse(client_fd, "550 Failed to open file\r\n");
+    close(data_socket);
+    return false;
+  }
+
+  // Send the file over the data connection
   char buffer[BUFF_SIZE];
-  size_t totalBytes = 0;
-  while (!file.eof()) {
-    file.read(buffer, sizeof(buffer));
-    int valread = file.gcount();
-    if (valread > 0) {
-      if (send(data_socket, buffer, valread, 0) < 0) {
-        file.close();
-        return false;
-      }
-      totalBytes += valread;
+  while (file.read(buffer, sizeof(buffer))) {
+    if (send(data_socket, buffer, file.gcount(), 0) < 0) {
+      perror("Send failed");
+      file.close();
+      close(data_socket);
+      return false;
     }
   }
+
+  // Send any remaining data
+  if (file.gcount() > 0) {
+    if (send(data_socket, buffer, file.gcount(), 0) < 0) {
+      perror("Send failed");
+      file.close();
+      close(data_socket);
+      return false;
+    }
+  }
+
   file.close();
-  send(client_fd, "SUCCESS: File downloaded\n", 25, 0);
+  close(data_socket);
+
+  // Notify the client that the transfer is complete
+  SendResponse(client_fd, "226 Transfer complete\r\n");
   return true;
 }
 fs::path FileHandler::GetCurrent_dir() const { return (current_dir); }

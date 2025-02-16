@@ -5,6 +5,7 @@
 #include <arpa/inet.h>
 #include <cstring>
 #include <string>
+#include <vector>
 class DataConnection : public Socket {
 public:
   DataConnection();

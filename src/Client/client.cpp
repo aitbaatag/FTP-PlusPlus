@@ -32,6 +32,7 @@ Client::Cinput Client::SplitInput(const std::string &input) {
   return cinput;
 }
 void Client::ConnectToServer() {
+  std::cout << " clinet calss server ip " << server_ip << std::endl;
   FileManager filemanager(sockfd, server_ip);
   std::string input;
   if (connect(sockfd, (sockaddr *)&server_addr, sizeof(server_addr)) == -1) {

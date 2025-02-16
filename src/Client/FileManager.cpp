@@ -1,9 +1,12 @@
 #include "../../inc/Client/FileManager.hpp"
+#include <cstdio>
+#include <iostream>
 #include <string>
 
 FileManager::FileManager(int fdsocket, const std::string &server_ip)
     : server_ip(server_ip) {
   this->fdsocket = fdsocket;
+  std::cout << "-----------------" << server_ip << std::endl;
 }
 bool FileManager::openfile(std::fstream &file, fs::path filepath,
                            std::ios_base::openmode mode) {
@@ -19,18 +22,23 @@ bool FileManager::fileexists(const std::string &filepath) {
   return std::filesystem::exists(filepath);
 }
 void FileManager::download(const std::string &fileName) {
+  // Send the download commande to the server
+  std::string message = "download " + fileName;
+  if (send(fdsocket, message.c_str(), message.length(), 0) < 0) {
+    perror("send failed\n");
+    return;
+  }
+  std::cout << " filemanager class server ip " << server_ip << "__"
+            << std::endl;
+  // Receive the data port from the server and connect to the server
   ClientDataConnection dataconnection(server_ip);
-  std::fstream file;
-  // TODO
-  // recv data port
-  // open new socket
   int data_socket = dataconnection.CreateClientDataConnection(
-      fdsocket); // get new socket fd to transfer data // TODO need fix
+      fdsocket); // get new socket fd to transfer data
+  std::fstream file;
   if (!openfile(file, fileName, std::ios::binary | std::ios::out)) {
     std::cerr << "Failed to create file\n";
     return;
   }
-
   char buffer[BUFF_SIZE];
   size_t totalBytes = 0;
 
@@ -43,7 +51,6 @@ void FileManager::download(const std::string &fileName) {
     } else if (valread == 0) {
       break; // End of file
     }
-    write(1, buffer, valread);
     file.write(buffer, valread);
     totalBytes += valread;
   }

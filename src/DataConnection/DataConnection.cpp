@@ -17,32 +17,50 @@ void DataConnection::SendDataPort(int data_port, int client_fd) {
     exit(1);
   }
 }
+int DataConnection::recv_data_port(int client_fd) {
+  char buffer[1024] = {0};
+  int bytes_read = recv(client_fd, buffer, sizeof(buffer) - 1, 0);
+  if (bytes_read <= 0) {
+    std::cerr << "Failed to receive data port from server\n";
+    return -1;
+  }
 
+  // Parse the data port from the server's message
+  std::string port_message(buffer);
+  size_t start = port_message.find('(');
+  size_t end = port_message.find(')');
+  if (start == std::string::npos || end == std::string::npos) {
+    std::cerr << "Invalid data port message from server\n";
+    return -1;
+  }
+
+  std::string port_str = port_message.substr(start + 1, end - start - 1);
+  std::vector<std::string> parts;
+  size_t pos = 0;
+  while ((pos = port_str.find(',')) != std::string::npos) {
+    parts.push_back(port_str.substr(0, pos));
+    port_str.erase(0, pos + 1);
+  }
+  parts.push_back(port_str); // Add the last part
+
+  if (parts.size() != 6) {
+    std::cerr << "Invalid data port format from server\n";
+    return -1;
+  }
+
+  // Extract p1 and p2
+  int p1 = std::stoi(parts[4]);
+  int p2 = std::stoi(parts[5]);
+  int data_port = p1 * 256 + p2;
+
+  return data_port;
+}
 void DataConnection::ConnectToServer(int data_port) {
-  (void)data_port;
   // server_addr.sin_port = htons(data_port);
   if (connect(sockfd, (sockaddr *)&server_addr, sizeof(server_addr)) == -1) {
     std::cerr << "Failed to connect to the server (data connection)\n";
     exit(1);
   }
-}
-int DataConnection::recv_data_port(int client_fd) {
-  char buff[1024] = {0};
-  int bytes_read = recv(client_fd, buff, sizeof(buff), 0);
-  if (bytes_read < 0) {
-    std::cerr << "receive failed\n";
-    exit(1);
-  }
-  buff[bytes_read] = '\0';
-  std::string port_message(buff);
-  // parse data port
-  size_t start = port_message.find('(');
-  size_t end = port_message.find(')');
-  std::string port_str = port_message.substr(start + 1, end + 1);
-  int p1 = std::stoi(port_str.substr(0, port_str.find(',')));
-  int p2 = std::stoi(port_str.substr(port_str.find(',') + 1));
-  int data_port = p1 * 256 + p2;
-  return (data_port);
 }
 int DataConnection::CreateDataConnection(int client_fd,
                                          const std::string &server_ip) {
@@ -50,10 +68,21 @@ int DataConnection::CreateDataConnection(int client_fd,
   if (server_ip.empty()) { // For server
     InitSocketAdd();
     BindSocket();
+    sockaddr_in assigned_addr{};
+    socklen_t addr_len = sizeof(assigned_addr);
+    getsockname(sockfd, (sockaddr *)&assigned_addr, &addr_len);
+    int data_port = ntohs(assigned_addr.sin_port);
+
     ListenSocket();
+    // Send port to client
+    SendDataPort(data_port, client_fd);
   } else { // For client
     int data_port = recv_data_port(client_fd);
+    if (data_port < 0) {
+      exit(1);
+    }
     char *c_server_ip = const_cast<char *>(server_ip.c_str());
+    std::cout << "server ip --- " << server_ip << std::endl;
     set_port(data_port);
     InitSocketAdd(c_server_ip);
     ConnectToServer(data_port);
@@ -61,15 +90,8 @@ int DataConnection::CreateDataConnection(int client_fd,
   }
   return AcceptDataConnection(client_fd);
 }
-// sockfd ==> data socket
+// sockfd ""==> data socket
 int DataConnection::AcceptDataConnection(int client_fd) {
-  sockaddr_in assigned_addr{};
-  socklen_t addr_len = sizeof(assigned_addr);
-  getsockname(sockfd, (sockaddr *)&assigned_addr, &addr_len);
-  int data_port = ntohs(assigned_addr.sin_port);
-
-  // Send port to client
-  SendDataPort(data_port, client_fd);
 
   sockaddr_in client_data_add{};
   socklen_t client_data_len = sizeof(client_data_add);
