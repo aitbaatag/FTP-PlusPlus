@@ -12,11 +12,11 @@ public:
   virtual ~DataConnection();
 
   void SendDataPort(int data_port, int client_fd);
-  void ConnectToServer(int data_port);
+  void ConnectToServer();
 
 protected:
   int CreateDataConnection(int client_fd, const std::string &server_ip = "");
-  int AcceptDataConnection(int client_fd);
+  int AcceptDataConnection();
   int get_data_socket() const;
 
 private:

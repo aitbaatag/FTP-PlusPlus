@@ -55,8 +55,7 @@ int DataConnection::recv_data_port(int client_fd) {
 
   return data_port;
 }
-void DataConnection::ConnectToServer(int data_port) {
-  // server_addr.sin_port = htons(data_port);
+void DataConnection::ConnectToServer() {
   if (connect(sockfd, (sockaddr *)&server_addr, sizeof(server_addr)) == -1) {
     std::cerr << "Failed to connect to the server (data connection)\n";
     exit(1);
@@ -84,13 +83,13 @@ int DataConnection::CreateDataConnection(int client_fd,
     char *c_server_ip = const_cast<char *>(server_ip.c_str());
     set_port(data_port);
     InitSocketAdd(c_server_ip);
-    ConnectToServer(data_port);
+    ConnectToServer();
     return sockfd; // data socket
   }
-  return AcceptDataConnection(client_fd);
+  return AcceptDataConnection();
 }
 // sockfd ""==> data socket
-int DataConnection::AcceptDataConnection(int client_fd) {
+int DataConnection::AcceptDataConnection() {
 
   sockaddr_in client_data_add{};
   socklen_t client_data_len = sizeof(client_data_add);
